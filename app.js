@@ -10,6 +10,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const path = require('path');
 const socket = require('socket.io');
+const LocalStrategy = require("passport-local")
 
 
 const app = express();
@@ -17,22 +18,25 @@ const server = http.createServer(app);
 const io = socket.listen(server);
 
 const config = require('./database/config');
-
+const UserModel = require('./models/user.model');
 // user package in app
 app.use(cookie());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
     cookie: { maxAge: 80000},
-    secret: "vishal",
+    secret: "vishalvivi",
     resave: false,
     saveUninitialized: false
 }));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
+passport.use( new LocalStrategy(UserModel.authenticate()));
+passport.serializeUser(UserModel.serializeUser());
+passport.deserializeUser(UserModel.deserializeUser());
+
 app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
-app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 //Enable CORS for all HTTP methods
@@ -41,7 +45,15 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, OPTIONS");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
-  });
+});
+
+app.use(function(req, res, next){
+    res.locals.currentUser = req.user;
+    res.locals.error = req.flash("error");
+    res.locals.success = req.flash("success");
+    next();
+});
+
 
 require('./router/backend.routes.js')(app, passport, multer);
 
@@ -58,7 +70,6 @@ mongoose.connect(config.url,{
 mongoose.Promise = global.Promise;
 
 // server start
-
 server.listen(process.env.PORT || config.server_port, () => {
     console.log("Server is Listening on port " + 4000);
 })
