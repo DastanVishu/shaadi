@@ -11,13 +11,11 @@ const flash = require('connect-flash');
 const path = require('path');
 const socket = require('socket.io');
 const LocalStrategy = require("passport-local")
-
+const dotenv = require("dotenv").config();
 
 const app = express();
 const server = http.createServer(app);
 const io = socket.listen(server);
-
-const config = require('./database/config');
 const UserModel = require('./models/user.model');
 // user package in app
 app.use(cookie());
@@ -56,10 +54,12 @@ app.use(function(req, res, next){
 
 
 require('./router/backend.routes.js')(app, passport, multer);
-
-mongoose.connect(config.url,{
+mongoose.Promise = global.Promise;
+mongoose.set('useCreateIndex', true);
+mongoose.connect(process.env.DATABASE_CONNECTION,{
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
 }).then(() => {
     console.log("Successfully connected to the database");
 }).catch(err => {
@@ -67,9 +67,7 @@ mongoose.connect(config.url,{
 });
 
 
-mongoose.Promise = global.Promise;
-
 // server start
-server.listen(process.env.PORT || config.server_port, () => {
-    console.log("Server is Listening on port " + 4000);
+server.listen(process.env.PORT || process.env.SERVERPORT, () => {
+    console.log("Server is Listening on port " + process.env.SERVERPORT);
 })

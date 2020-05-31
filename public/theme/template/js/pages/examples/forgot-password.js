@@ -1,5 +1,11 @@
 $(function () {
     $('#forgot_password').validate({
+        rules: {
+            password: "required",
+            confirm: {
+              equalTo: "#password"
+            }
+          },
         highlight: function (input) {
             console.log(input);
             $(input).parents('.form-line').addClass('error');
