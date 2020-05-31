@@ -1,9 +1,6 @@
 const users = require('../../models/user.model');
 const mini = require('../../util/functions');
 const emails = require('../../util/sendEmail');
-exports.home = (req, res) => {
-    console.log("Home page");
-};
 
 // ======================== signup logic ==========================
 exports.signup = (req, res) => {

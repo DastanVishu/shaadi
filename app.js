@@ -53,7 +53,8 @@ app.use(function(req, res, next){
 });
 
 
-require('./router/backend.routes.js')(app, passport, multer);
+require('./router/admin.routes')(app, passport, multer);
+require('./router/public.routes')(app);
 mongoose.Promise = global.Promise;
 mongoose.set('useCreateIndex', true);
 mongoose.connect(process.env.DATABASE_CONNECTION,{

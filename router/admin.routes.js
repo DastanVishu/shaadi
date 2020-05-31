@@ -3,7 +3,7 @@ module.exports = (app, passport) => {
 const  login = require('../controller/admin/login');
 const middleware = require('../middleware/middleware');
 const dashboard = require('../controller/admin/dashboard');
-app.get('/', login.home);
+
 
 // ======================== login and signup ======================
 app.get('/signup', login.signup);
